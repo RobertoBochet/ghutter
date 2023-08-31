@@ -1,13 +1,13 @@
 # GHutter
 
-`GHutter` is a tool to recreate the history graph of a GitHub repository in graphviz dot format
+`GHutter` is a tool to recreate the history graph of a GitHub repository in Graphviz's Dot Language
 
 ## Usage
 
 ```text
 usage: python -m ghutter [-h] [-t TOKEN] [--max-commits MAXCOMMITS] [-d DOTOUTPUT] [-o DRAWOUTPUT] repository
 
-'GHutter' is a tool to recreate the history graph of a GitHub repository in graphviz dot format
+'GHutter' is a tool to recreate the history graph of a GitHub repository in Graphviz's Dot Language
 
 positional arguments:
   repository            github repository in format "owner/repository" or url
