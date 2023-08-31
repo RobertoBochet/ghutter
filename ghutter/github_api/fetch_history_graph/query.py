@@ -2,11 +2,15 @@ from abc import ABC
 from typing import List
 
 from gql import gql
-from gql.transport.exceptions import TransportServerError
+from gql.transport.exceptions import TransportQueryError, TransportServerError
 from pydantic import BaseModel
 
 from ghutter.github_api.base import BaseQuery
-from ghutter.github_api.exceptions import GitHubApiException, UnauthorizedException
+from ghutter.github_api.exceptions import (
+    GitHubApiException,
+    RepositoryNotFoundException,
+    UnauthorizedException,
+)
 from ghutter.utils.helpers import sha_2_short_sha
 
 
@@ -112,6 +116,11 @@ class FetchHistoryQuery(BaseQuery):
             variables = self.model_dump()
             response = self.client.execute(self._QUERY, variable_values=variables)
             return QueryResponse(**response)
+        except TransportQueryError as e:
+            if e.errors[0]["type"] == "NOT_FOUND":
+                raise RepositoryNotFoundException() from e
+
+            raise GitHubApiException(e.errors) from e
         except TransportServerError as e:
             if e.code == 401:
                 raise UnauthorizedException() from e

@@ -1,7 +1,7 @@
 import re
 from argparse import Action, ArgumentError, ArgumentParser
 from pathlib import Path
-from typing import Self
+from typing import List, Self
 
 from pydantic import BaseModel
 
@@ -17,7 +17,7 @@ class Arguments(BaseModel):
     repository: str
     token: str
     maxCommits: int | None = None
-    svgOutput: Path | None = None
+    drawOutput: List[Path] | None = None
     dotOutput: Path
 
     class _RepositoryAction(Action):
@@ -30,21 +30,34 @@ class Arguments(BaseModel):
 
     @classmethod
     def parse_arguments(cls) -> Self:
-        parser = ArgumentParser(prog=ghutter.__package__, description="GHutter")
+        parser = ArgumentParser(prog=f"python -m {ghutter.__package__}", description="GHutter")
 
         parser.add_argument(
             "repository", help='github repository in format "owner/repository" or url', action=cls._RepositoryAction
         )
-        parser.add_argument("--token", help="github personal access token")
+        parser.add_argument("-t", "--token", help="github personal access token")
         parser.add_argument(
             "--max-commits",
             help="max number or commits to fetch from the history " "(parents will always be shown)",
             type=int,
             dest="maxCommits",
         )
-        parser.add_argument("--svg-output", help="svg graph output path", type=Path, dest="svgOutput")
         parser.add_argument(
-            "--dot-output", help="graph dot file output path", type=Path, default="result.dot", dest="dotOutput"
+            "-d",
+            "--dot-output",
+            help="graph dot file output path (default 'history.dot')",
+            type=Path,
+            default="history.dot",
+            dest="dotOutput",
+        )
+        parser.add_argument(
+            "-o",
+            "--draw-output",
+            help="graph render output path (there may be several). "
+            "Check 'Graphviz' supported formats on your system",
+            action="append",
+            type=Path,
+            dest="drawOutput",
         )
 
         return cls(**parser.parse_args().__dict__)

@@ -23,8 +23,8 @@ class FetchHistoryGraph(BaseModel):
             if self.maxCommits == commit_counter:
                 break
 
-            if self.maxCommits is not None and query.limit + self.maxCommits <= commit_counter:
-                query.limit = self.maxCommits - commit_counter
+            if self.maxCommits is not None and query.limit + self.maxCommits > commit_counter:
+                query.limit = min(self.maxCommits - commit_counter, 100)  # 100 is GitHub API pagination limit
 
             response = query()
 

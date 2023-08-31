@@ -1,38 +1,58 @@
 from logging import getLogger
 
-from pydot import graph_from_dot_file
+import networkx as nx
 
-from ghutter.github_api.exceptions import GitHubApiException, UnauthorizedException
+from ghutter.github_api.exceptions import (
+    GitHubApiException,
+    RepositoryNotFoundException,
+    UnauthorizedException,
+)
 from ghutter.github_api.fetch_history_graph import FetchHistoryGraph
 from ghutter.utils.arguments import Arguments
-from ghutter.utils.helpers import sha_2_short_sha
 
-_LOGGER = getLogger(__package__)
+LOGGER = getLogger(__package__)
 
-if __name__ == "__main__":
+
+def main():
     args = Arguments.parse_arguments()
+
+    graph = nx.DiGraph()
 
     try:
         fetch = FetchHistoryGraph(**args.model_dump())
         result = fetch()
 
-        # Write the edge directly in file instead of using pydot to prevent memory issues
-        with open(args.dotOutput, "w") as f:
-            f.write("digraph G {\n")
-            for i, j in result:
-                f.write(f"C{sha_2_short_sha(i)} -> C{sha_2_short_sha(j)}\n")
-            f.write("}\n")
+        for i, j in result:
+            graph.add_edge(i, j)
+
     except UnauthorizedException:
-        _LOGGER.fatal("GitHub api returned 401, please check your token")
+        LOGGER.fatal("GitHub api returned 401, please check your token")
+        exit(1)
+    except RepositoryNotFoundException:
+        LOGGER.fatal("Repository not found, please check the repository name")
         exit(1)
     except GitHubApiException as e:
-        _LOGGER.fatal(f"GitHub api error {e}")
+        LOGGER.fatal(f"GitHub api error {e}")
         exit(1)
 
-    if args.svgOutput:
-        graphs = graph_from_dot_file(args.dotOutput)
-        try:
-            graphs[0].write_svg(args.svgOutput)
-        except FileNotFoundError:
-            _LOGGER.error("Unable to find graphviz, please install it and try again.")
-            exit(1)
+    try:
+        nx.find_cycle(graph)
+        LOGGER.error("The history graph contains a cycle, are you sure this is a valid git repository?")
+    except nx.NetworkXNoCycle:
+        pass
+
+    try:
+        graph_dot = nx.nx_agraph.to_agraph(graph)
+        graph_dot.write(args.dotOutput)
+
+        if args.drawOutput:
+            for o in args.drawOutput:
+                graph_dot.draw(o, prog="dot")
+
+    except ImportError:
+        LOGGER.fatal("Unable to find graphviz, please install it and try again.")
+        exit(1)
+
+
+if __name__ == "__main__":
+    main()
