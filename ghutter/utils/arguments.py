@@ -42,7 +42,8 @@ class Arguments(BaseModel):
         parser.add_argument("-t", "--token", help="github personal access token")
         parser.add_argument(
             "--max-commits",
-            help="max number or commits to fetch from the history " "(parents will always be shown)",
+            help="max number of commits to fetch from the history. "
+            "If it is omitted it tries to fetch the whole history (parents will always be shown)",
             type=int,
             dest="maxCommits",
         )
