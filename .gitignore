@@ -1,0 +1,4 @@
+*.dot
+*.svg
+
+.mypy_cache
