@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "ghutter"
 version = "0.1.0"
-description = ""
+description = "ghutter is a tool to recreate the history of a GitHub repository"
 authors = ["Roberto Bochet <r@robertobochet.me>"]
 readme = "README.md"
 
@@ -9,7 +9,8 @@ readme = "README.md"
 python = "^3.11"
 pydantic = "^2.3.0"
 gql = {extras = ["aiohttp"], version = "^3.4.1"}
-pydot = "^1.4.2"
+networkx = "^3.1"
+pygraphviz = "^1.11"
 
 [tool.poetry.group.dev.dependencies]
 pre-commit = "^3.3.3"
@@ -17,3 +18,6 @@ pre-commit = "^3.3.3"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+ghutter = "ghutter.__main__:main"

@@ -1,11 +1,11 @@
 # GHutter
 
-## Description
+`ghutter` is a tool to recreate the history of a GitHub repository
 
 ## Usage
 
 ```text
-usage: ghutter [-h] [-t TOKEN] [--max-commits MAXCOMMITS] [-d DOTOUTPUT] [-o DRAWOUTPUT] repository
+usage: python -m ghutter [-h] [-t TOKEN] [--max-commits MAXCOMMITS] [-d DOTOUTPUT] [-o DRAWOUTPUT] repository
 
 GHutter
 
