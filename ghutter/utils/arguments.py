@@ -30,7 +30,11 @@ class Arguments(BaseModel):
 
     @classmethod
     def parse_arguments(cls) -> Self:
-        parser = ArgumentParser(prog=f"python -m {ghutter.__package__}", description="GHutter")
+        parser = ArgumentParser(
+            prog=f"python -m {ghutter.__package__}",
+            description="'GHutter' is a tool to recreate the history graph of a GitHub repository "
+            "in Graphviz's Dot Language",
+        )
 
         parser.add_argument(
             "repository", help='github repository in format "owner/repository" or url', action=cls._RepositoryAction
