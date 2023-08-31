@@ -10,6 +10,8 @@
 pip install ghutter
 ```
 
+Anymore `GHutter` requires `graphviz` is installed on you system in order to render the graphs. Refer to [Graphviz documentation](https://graphviz.org/download/) for more information
+
 ## Usage
 
 ```text
